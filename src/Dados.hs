@@ -1,4 +1,4 @@
-module Dados (dadosCampeonato, dadosInvalidos) where
+module Dados (dadosCampeonato, dadosInvalidos, dadosVazios) where
 
 dadosCampeonato :: String
 dadosCampeonato = unlines
@@ -27,4 +27,12 @@ dadosInvalidos = unlines
   , "3;Maringa;1;0;Maringa"
   , "4;Coritiba;1;1;Operario"
   , "4;Operario;0;0;Londrina"
+  , "5;Coritiba;2"
+  ]
+
+-- Campeonato sem partidas (so comentario e linha em branco): caso de borda.
+dadosVazios :: String
+dadosVazios = unlines
+  [ "# nenhuma partida cadastrada"
+  , ""
   ]

@@ -29,6 +29,16 @@ main = do
   verificar "15 partidas" (length partidas) 15
   verificar "classificacao final" (map (\l -> (nomeTime l, pontosLinha l)) (classificacao partidas))
     [("Athletico",9),("Operario",9),("Coritiba",8),("Parana",5),("Maringa",5),("Londrina",2)]
+  verificar "classificacao final completa (conferida a mao)"
+    (map (\l -> (nomeTime l, jogos l, vitorias l, empates l, derrotas l, golsPro l, golsContra l))
+         (classificacao partidas))
+    [ ("Athletico",5,2,3,0,9,6), ("Operario",5,2,3,0,4,2), ("Coritiba",5,2,2,1,8,4)
+    , ("Parana",5,1,2,2,3,4), ("Maringa",5,1,2,2,4,6), ("Londrina",5,0,2,3,2,8) ]
+  verificar "pontos por resultado" (map pontos [Vitoria, Empate, Derrota]) [3, 1, 0]
+  verificar "aproveitamento do Athletico (9 de 15 pontos)"
+    (aproveitamento (linhaDoTime partidas "Athletico")) 60.0
+  verificar "separar por ponto e virgula" (separar ';' "1;A;;B") ["1", "A", "", "B"]
+  verificar "campeonato so com comentarios" (lerCampeonato dadosVazios) (Right [])
   verificar "desempate por saldo (Athletico antes do Operario)"
     (map nomeTime (take 2 (classificacao partidas))) ["Athletico", "Operario"]
   verificar "desempate por saldo (Parana antes do Maringa)"
@@ -49,7 +59,7 @@ main = do
     (Left (TimeRepetidoNaRodada 2 "Y"))
   verificar "todos os erros" (todosOsErros dadosInvalidos)
     [ NumeroInvalido 1 "dois", PlacarNegativo 2, MesmoTime 3
-    , TimeRepetidoNaRodada 5 "Operario" ]
+    , CamposInvalidos 6, TimeRepetidoNaRodada 5 "Operario" ]
   verificar "ignorar comentarios e linhas vazias"
     (lerCampeonato "\n # comentario\n1;X;0;0;Y\n") (Right [Partida 1 "X" 0 0 "Y"])
   putStrLn "Todos os testes passaram."

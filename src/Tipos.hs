@@ -1,6 +1,6 @@
 module Tipos
   ( Time, Resultado(..), Partida(..), Linha(..)
-  , participou, resultadoPara, times
+  , participou, golsDoPontoDeVista, resultadoPara, times
   ) where
 
 import Data.List (nub, sort)
@@ -31,6 +31,12 @@ data Linha = Linha
 participou :: Time -> Partida -> Bool
 participou t p = t == mandante p || t == visitante p
 
+-- (gols feitos, gols sofridos) do ponto de vista do time; usada pelas Camadas 1 e 2.
+golsDoPontoDeVista :: Time -> Partida -> (Int, Int)
+golsDoPontoDeVista t p
+  | t == mandante p = (golsMandante p, golsVisitante p)
+  | otherwise = (golsVisitante p, golsMandante p)
+
 resultadoPara :: Time -> Partida -> Maybe Resultado
 resultadoPara t p
   | not (participou t p) = Nothing
@@ -38,9 +44,7 @@ resultadoPara t p
   | feitos < sofridos = Just Derrota
   | otherwise = Just Empate
   where
-    (feitos, sofridos)
-      | t == mandante p = (golsMandante p, golsVisitante p)
-      | otherwise = (golsVisitante p, golsMandante p)
+    (feitos, sofridos) = golsDoPontoDeVista t p
 
 times :: [Partida] -> [Time]
 times = sort . nub . concatMap (\p -> [mandante p, visitante p])

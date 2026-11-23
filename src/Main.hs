@@ -25,3 +25,9 @@ main = do
   putStrLn ("Primeiro erro: " ++ show (lerCampeonato dadosInvalidos))
   putStrLn "Todos os erros:"
   mapM_ print (todosOsErros dadosInvalidos)
+  putStrLn "\n=== Campeonato vazio (caso de borda) ==="
+  case lerCampeonato dadosVazios of
+    Left erro -> putStrLn ("Erro na entrada: " ++ show erro)
+    Right vazio -> do
+      putStr (tabelaFormatada (classificacao vazio))
+      mostrarEstatisticas vazio

@@ -16,22 +16,21 @@ linhaDoTime :: [Partida] -> Time -> Linha
 linhaDoTime partidas t = foldl' acumular inicial (filter (participou t) partidas)
   where
     inicial = Linha t 0 0 0 0 0 0
-    acumular l p =
-      let (gp, gc) = if mandante p == t
-                     then (golsMandante p, golsVisitante p)
-                     else (golsVisitante p, golsMandante p)
-          v = if gp > gc then 1 else 0
-          e = if gp == gc then 1 else 0
-          d = if gp < gc then 1 else 0
+    -- Reaproveita resultadoPara (Camada 1): a regra de quem venceu fica em um lugar só.
+    acumular l p = maybe l (somarJogo l p) (resultadoPara t p)
+    somarJogo l p r =
+      let (gp, gc) = golsDoPontoDeVista t p
       in l { jogos = jogos l + 1
-           , vitorias = vitorias l + v
-           , empates = empates l + e
-           , derrotas = derrotas l + d
+           , vitorias = vitorias l + contar Vitoria r
+           , empates = empates l + contar Empate r
+           , derrotas = derrotas l + contar Derrota r
            , golsPro = golsPro l + gp
            , golsContra = golsContra l + gc }
+    contar esperado r = if r == esperado then 1 else 0
 
+-- Pontos calculados a partir da funcao pontos, sem repetir os valores 3 e 1.
 pontosLinha :: Linha -> Int
-pontosLinha l = 3 * vitorias l + empates l
+pontosLinha l = vitorias l * pontos Vitoria + empates l * pontos Empate
 
 saldo :: Linha -> Int
 saldo l = golsPro l - golsContra l
